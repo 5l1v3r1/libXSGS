@@ -1,0 +1,43 @@
+libXSGS
+=======
+
+This library implements Delerablée and Pointcheval's eXtremely Short Group Signatures [1] (XSGS), a group signature scheme [2] that can be proven in the strong security model of Bellare, Shi, and Zhang [3]. To the best of our knowledge, this is the first implementation of the scheme.
+
+
+Implementation details
+----------------------
+
+The current source code is a makefile project, written in C. We chose C, as the external routines and the libraries we rely on are also written in C, hence the whole project and its dependencies are written in one language. libXSGS uses the GNU Multiple Precision Arithmetic Library1 [4] for the basic arithmetic operations, the Pairing-Based Cryptography Library2 [5] (PBC) for the curve and pairing-based arithmetic operations, the optimized reference implementation of the authors for the SHA3 hash algorithm (Keccak3) and the OpenSSL Library4 for RSA signature and certificate support. At compile time one can choose between the TCMalloc Library [6] for a fast and multithreaded malloc() or the GNU C Library memory allocation, which will be linked to the XSGS library.
+
+
+Background
+----------
+
+We built upon XSGS to realize the approach we published in our paper 'On locational privacy in the Absence of Anonymous Payments' [7].
+
+From the abstract:
+In this paper we deal with the situation that in certain contexts vendors have no incentive to implement anonymous payments or that existing regulation prevents complete customer anonymity. While the paper discusses the problem also in a general fashion, we use the recharging of electric vehicles using public charging infrastructure as a working example. Here, customers leave rather detailed movement trails, as they authenticate to charge and the whole process is often post-paid, i.e., are billed after consumption. In an attempt to enforce transparency and give customers the information necessary to dispute a bill they deem inaccurate, Germany and other European countries require to retain the ID of the energy meter used in each charging process. Similar information is also retained in other applications, where Point of Sales terminals are used (e.g., bike sharing). 
+
+
+Cryptographic Parameters
+------------------------
+
+The PBC library defines a variety of pairing types, of which our XSGS implementation uses either type D, F, or G, respectively. The type can be chosen at compile time. The group order is ~300 bits, the curve parameters are as follows: r >= 160, q >=1024/k, k= 6 (type D) 12 (type F) 10 (type G). Where Paillier’s operations are used, the modulus is of 1024 bit; RSA can by chose at compile time to use key lengths of either 1024, 2048, or 4096. The cryptographic hash function used throughout the XSGS implementation is the SHA3 contest winner Keccak with 256 bit hash length.
+
+
+Warning
+-------
+
+Please be aware that this is research code and by no means intended for anything even close to production use. However, we found that we were able to properly compile and run it on a variety of devices (both x86 and ARM), so we removed the 'works on my machine' sticker from the library's wrapping and publish libXSGS under MIT License. May it save someone from doing the same work twice. 
+
+
+References
+----------
+
+[1] http://www.di.ens.fr/~pointche/Documents/Papers/2006_vietcrypt.pdf
+[2] https://en.wikipedia.org/wiki/Group_signature
+[3] https://eprint.iacr.org/2004/077.pdf
+[4] https://gmplib.org/
+[5] https://crypto.stanford.edu/pbc/
+[6] https://code.google.com/p/gperftools/
+[7] https://www.syssec.rub.de/research/publications/location-privacy-non-anon-payments/
